@@ -1,0 +1,88 @@
+{
+  "tracks": {
+    "href": "https://api.spotify.com/v1/search?query=cant+stop&type=track&market=US&offset=0&limit=1",
+    "items": [
+      {
+        "album": {
+          "album_type": "album",
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5"
+              },
+              "href": "https://api.spotify.com/v1/artists/0L8ExT028jH3ddEcZwqJJ5",
+              "id": "0L8ExT028jH3ddEcZwqJJ5",
+              "name": "Red Hot Chili Peppers",
+              "type": "artist",
+              "uri": "spotify:artist:0L8ExT028jH3ddEcZwqJJ5"
+            }
+          ],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/6deiaArbeoqp1xPEGdEKp1"
+          },
+          "href": "https://api.spotify.com/v1/albums/6deiaArbeoqp1xPEGdEKp1",
+          "id": "6deiaArbeoqp1xPEGdEKp1",
+          "images": [
+            {
+              "height": 640,
+              "url": "https://i.scdn.co/image/ab67616d0000b273de1af2785a83cc660155a0c4",
+              "width": 640
+            },
+            {
+              "height": 300,
+              "url": "https://i.scdn.co/image/ab67616d00001e02de1af2785a83cc660155a0c4",
+              "width": 300
+            },
+            {
+              "height": 64,
+              "url": "https://i.scdn.co/image/ab67616d00004851de1af2785a83cc660155a0c4",
+              "width": 64
+            }
+          ],
+          "name": "By the Way (Deluxe Edition)",
+          "release_date": "2002-07-09",
+          "release_date_precision": "day",
+          "total_tracks": 18,
+          "type": "album",
+          "uri": "spotify:album:6deiaArbeoqp1xPEGdEKp1"
+        },
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/0L8ExT028jH3ddEcZwqJJ5"
+            },
+            "href": "https://api.spotify.com/v1/artists/0L8ExT028jH3ddEcZwqJJ5",
+            "id": "0L8ExT028jH3ddEcZwqJJ5",
+            "name": "Red Hot Chili Peppers",
+            "type": "artist",
+            "uri": "spotify:artist:0L8ExT028jH3ddEcZwqJJ5"
+          }
+        ],
+        "disc_number": 1,
+        "duration_ms": 269000,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "USWB10201694"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/3ZOEytgrvLwQaqXreDs2Jx"
+        },
+        "href": "https://api.spotify.com/v1/tracks/3ZOEytgrvLwQaqXreDs2Jx",
+        "id": "3ZOEytgrvLwQaqXreDs2Jx",
+        "is_local": false,
+        "is_playable": true,
+        "name": "Can't Stop",
+        "popularity": 80,
+        "preview_url": "https://p.scdn.co/mp3-preview/076f7d75404dfd18964d60da63d1855b192f3e62?cid=774b29d4f13844c495f206cafdad9c86",
+        "track_number": 7,
+        "type": "track",
+        "uri": "spotify:track:3ZOEytgrvLwQaqXreDs2Jx"
+      }
+    ],
+    "limit": 1,
+    "next": "https://api.spotify.com/v1/search?query=cant+stop&type=track&market=US&offset=1&limit=1",
+    "offset": 0,
+    "previous": null,
+    "total": 58412
+  }
+}
