@@ -26,16 +26,16 @@ class SpotifySearchTracksProvider extends ChangeNotifier {
 
   Future<void> getRecentlyPlayed() async {
     List<SpotifyTrack> spotifyTracks =
-        await SpotifyApiService.getRecentlyPlayedTracks(
-            _spotifyAuth.getSpotifySession);
+    await SpotifyApiService.getRecentlyPlayedTracks(
+        _spotifyAuth.getSpotifySession);
     this._recentlyPlayedSongs = spotifyTracks;
     notifyListeners();
   }
 
   Future<void> searchSongs(String query) async {
     List<SpotifyTrack> spotifyTracks =
-        await SpotifyApiService.getSearchedTracks(
-            query, _spotifyAuth.getSpotifySession);
+    await SpotifyApiService.getSearchedTracks(
+        query, _spotifyAuth.getSpotifySession);
     this._searchedSongs = spotifyTracks;
     notifyListeners();
   }

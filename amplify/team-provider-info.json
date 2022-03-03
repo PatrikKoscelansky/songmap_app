@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-songmap-staging-103648-authRole",
+      "UnauthRoleArn": "arn:aws:iam::018234779944:role/amplify-songmap-staging-103648-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::018234779944:role/amplify-songmap-staging-103648-authRole",
+      "Region": "eu-central-1",
+      "DeploymentBucketName": "amplify-songmap-staging-103648-deployment",
+      "UnauthRoleName": "amplify-songmap-staging-103648-unauthRole",
+      "StackName": "amplify-songmap-staging-103648",
+      "StackId": "arn:aws:cloudformation:eu-central-1:018234779944:stack/amplify-songmap-staging-103648/ae877400-8bef-11ec-ae37-0215a7ddafe8",
+      "AmplifyAppId": "d3sqmcd0fdp4a9"
+    },
+    "categories": {
+      "auth": {
+        "songmap82a739fb": {}
+      }
+    }
+  }
+}

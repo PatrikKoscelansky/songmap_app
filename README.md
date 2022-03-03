@@ -1,16 +1,13 @@
-# songmap_app
+# SongMap app
 
-A new Flutter application.
+Flutter application which will allow users to put a song on a map, for other people to discover and play.
 
-## Getting Started
+## For developers
+`songmap_app\lib\utils\secrets.dart` is not published due to security reasons.
 
-This project is a starting point for a Flutter application.
+Required values:
 
-A few resources to get you started if this is your first Flutter project:
+    const String SPOTIFY_CLIENT_ID = "";
+    const String GOOGLE_API_KEY = ""; //set as com.google.android.geo.API_KEY value in android/app/src/main/AndroidManifest.xml
+    const String SONGMAP_API_HOST = "";
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

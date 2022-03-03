@@ -1,19 +1,19 @@
+import 'dart:developer' as logging;
+
 import 'dart:math';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'dart:convert'
     show ascii, base64, json, utf8, base64Url, base64UrlEncode;
-import 'secrets.dart' show SPOTIFY_CLIENT_ID;
+import 'secrets.dart' show SPOTIFY_CLIENT_ID, SONGMAP_API_HOST;
 
 class SpotifyAuth {
   static const String _spotifyClientId = SPOTIFY_CLIENT_ID;
   static const String AUTH_URL = "https://accounts.spotify.com/authorize";
   static const String TOKEN_URL = "https://accounts.spotify.com/api/token";
-  // static const String AUTH_REDIRECT_URI =
-  //     "http://127.0.0.1:8000/spotify_auth_callback/";
   static const String AUTH_REDIRECT_URI =
-      "http://10.0.2.2:8000/spotify_auth_callback/";
+      SONGMAP_API_HOST + "spotify_auth_callback/";
   static const String scopes =
       "user-read-recently-played user-read-private user-read-email user-library-modify user-library-read app-remote-control streaming playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-read-currently-playing";
 
@@ -99,14 +99,14 @@ class SpotifyAuth {
       "code_verifier": _codeVerifier
     };
 
-    print("[SpotifyAuth] obtaining tokens ...");
+    logging.log("[spotify_auth] obtaining tokens ...");
     var uri = Uri.parse(TOKEN_URL);
     var res = await http.post(uri, headers: headers, body: data);
-    print("[SpotifyAuth] status code: " + res.statusCode.toString());
-    print("[SpotifyAuth] res body: " + res.body);
+    logging.log("[spotify_auth] status code: " + res.statusCode.toString());
+    logging.log("[spotify_auth] body: " + res.body);
 
     if (res.statusCode == 200) {
-      print("[SpotifyAuth] obtained tokens: " + res.body);
+      logging.log("[spotify_auth] obtained tokens: " + res.body);
       dynamic response = json.decode(res.body);
       this._spotifySession = SpotifySession(
           accessToken: response['access_token'],
@@ -114,7 +114,7 @@ class SpotifyAuth {
           expires: SpotifySession.expiresInToDateTime(response['expires_in']));
       await _storage.write(
           key: "spotify_tokens", value: this._spotifySession.toJson());
-      print("[SpotifyAuth] tokens saved");
+      logging.log("[spotify_auth] tokens saved");
       return this._spotifySession;
     }
     return null;
@@ -122,6 +122,10 @@ class SpotifyAuth {
 
   Future<SpotifySession> loadStoredSpotifySession() async {
     String tokensFromStorage = await _spotifyTokensFromStorage();
+    // print("[SpotifyAuth][loadStoredSpotifySession][tokensFromStorage]" +
+    //     tokensFromStorage);
+    logging.log("[spotify_auth] loading stored session: " + tokensFromStorage);
+    tokensFromStorage == null ? logging.log("[spotify_auth] tokens null") : logging.log("[spotify_auth] tokens not null");
     if (tokensFromStorage != null) {
       dynamic tokensStorageDecoded = json.decode(tokensFromStorage);
       this._spotifySession = SpotifySession(
@@ -137,9 +141,12 @@ class SpotifyAuth {
   }
 
   Future<SpotifySession> refreshTokens() async {
-    if (this._spotifySession == null) {
-      await loadStoredSpotifySession();
-    }
+    //  WHY
+    // if (this._spotifySession == null) {
+    //   await loadStoredSpotifySession();
+    // }
+
+    logging.log("[spotify_auth] refreshing session...");
 
     Map<String, String> headers = {
       'Accept': 'application/json',
@@ -155,7 +162,7 @@ class SpotifyAuth {
     var res = await http.post(uri, headers: headers, body: data);
 
     if (res.statusCode == 200) {
-      print("[SpotifyAuth] obtained tokens: " + res.body);
+      logging.log("[spotify_auth] obtained tokens: " + res.body);
       dynamic response = json.decode(res.body);
       this._spotifySession = SpotifySession(
           accessToken: response['access_token'],
@@ -163,17 +170,18 @@ class SpotifyAuth {
           expires: DateTime.parse(response['expires']));
       await _storage.write(
           key: "spotify_tokens", value: this._spotifySession.toJson());
-      print("[SpotifyAuth] tokens saved");
+      logging.log("[spotify_auth] tokens saved");
 
-      print("[SpotifyAuth] tokens refreshed");
+      logging.log("[spotify_auth] tokens refreshed");
       return this._spotifySession;
     }
+    logging.log("[spotify_auth] tokens refreshed");
     return null;
   }
 
   Future<String> _spotifyTokensFromStorage() async {
     var tokens = await _storage.read(key: "spotify_tokens");
-    if (tokens != null && tokens != "") {
+    if (tokens != null && tokens.isNotEmpty) {
       return tokens;
     }
     return null;

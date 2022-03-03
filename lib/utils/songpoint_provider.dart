@@ -1,17 +1,18 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:songmap_app/models/songpoint_model.dart';
-import 'package:songmap_app/utils/auth.dart';
 import 'package:songmap_app/utils/songmap_api_service.dart';
 
 class SongPointProvider extends ChangeNotifier {
-  Auth _auth;
-  List<SongPoint> _nearSongPoints;
 
-  SongPointProvider() {
+  List<SongPoint> _nearSongPoints;
+  AuthSession _authSession;
+
+  SongPointProvider(AuthSession authSession) {
     this._nearSongPoints = [];
 
-    _auth = Auth();
+    _authSession = authSession;
   }
 
   List<SongPoint> get nearSongPoints => this._nearSongPoints;
@@ -31,8 +32,9 @@ class SongPointProvider extends ChangeNotifier {
   }
 
   Future<List<SongPoint>> getNearSongPoints(LocationData location) async {
+    String jwt = (_authSession as CognitoAuthSession).userPoolTokens.accessToken;
     this._nearSongPoints = await SongMapApi.getNearSongPoints(
-        location.longitude, location.latitude, _auth.userSession);
+        location.longitude, location.latitude, jwt);
     _orderByDateTime();
     notifyListeners();
     return this._nearSongPoints;

@@ -13,7 +13,7 @@ class SpotifyApiService {
     }
     var uri = Uri.parse('$API_URL/me');
     String jsonResponse =
-        await http.read(uri, headers: _authHeaders(session.accessToken));
+    await http.read(uri, headers: _authHeaders(session.accessToken));
 
     return SpotifyUser.fromJson(json.decode(jsonResponse));
   }

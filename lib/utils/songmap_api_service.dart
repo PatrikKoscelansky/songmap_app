@@ -1,39 +1,32 @@
+import 'dart:convert' show ascii, base64, json;
+
 import 'package:http/http.dart' as http;
 import 'package:songmap_app/models/song_model.dart';
 import 'package:songmap_app/models/songpoint_model.dart';
 import 'package:songmap_app/models/user_model.dart';
-import 'dart:convert' show ascii, base64, json;
-import 'package:songmap_app/utils/auth.dart';
-
-const SERVER_IP = 'http://10.0.2.2:8000';
+import 'secrets.dart' show SONGMAP_API_HOST;
 
 class SongMapApi {
-  static Future<User> getUser(UserSession session) async {
-    if (!session.isValid) {
-      return null;
-    }
-    var uri = Uri.parse('$SERVER_IP/users/me/');
+  static Future<User> getUser(String jwt) async {
+    var uri = Uri.parse('${SONGMAP_API_HOST}users/me/');
     String jsonResponse =
-        await http.read(uri, headers: _authHeaders(session.jwt));
+        await http.read(uri, headers: _authHeaders(jwt));
 
     return User.fromJson(json.decode(jsonResponse));
   }
 
   static Future<List<SongPoint>> getNearSongPoints(
-      double longitude, double latitude, UserSession session) async {
-    if (!session.isValid) {
-      return null;
-    }
+      double longitude, double latitude, String jwt) async {
     Map<String, String> queryParams = {
       "longitude": longitude.toString(),
       "latitude": latitude.toString()
     };
     String queryString = Uri(queryParameters: queryParams).query;
-    String url = "$SERVER_IP/songpoints/" + "?" + queryString;
+    String url = "${SONGMAP_API_HOST}api/songpoints/" + "?" + queryString;
     var uri = Uri.parse(url);
 
     String jsonResponse =
-        await http.read(uri, headers: _authHeaders(session.jwt));
+        await http.read(uri, headers: _authHeaders(jwt));
 
     // Map<String, dynamic> decodedResponse = json.decode(jsonResponse);
     dynamic decodedResponse = json.decode(jsonResponse);
@@ -59,11 +52,7 @@ class SongMapApi {
   }
 
   static Future<List<SongPoint>> createSongPoints(
-      List<SongPoint> songPoints, UserSession session) async {
-    if (!session.isValid) {
-      return null;
-    }
-
+      List<SongPoint> songPoints, String jwt) async {
     if (songPoints.length > 0) {
       List<dynamic> songPointsJson = [];
       for (SongPoint songPoint in songPoints) {
@@ -71,9 +60,9 @@ class SongMapApi {
       }
 
       var body = json.encode(songPointsJson);
-      var uri = Uri.parse('$SERVER_IP/users/me/songpoints/');
+      var uri = Uri.parse('${SONGMAP_API_HOST}users/me/songpoints/');
       var res =
-          await http.post(uri, body: body, headers: _authHeaders(session.jwt));
+          await http.post(uri, body: body, headers: _authHeaders(jwt));
       print(res.body);
       if (res.statusCode == 200) {
         List<SongPoint> createdSongPoints = [];
@@ -91,18 +80,15 @@ class SongMapApi {
   //SONG
 
   static Future<Song> getSongBySpotifyID(
-      String spotifyId, UserSession session) async {
-    if (!session.isValid) {
-      return null;
-    }
+      String spotifyId, String jwt) async {
     Map<String, String> queryParams = {"spotify_id": spotifyId};
     String queryString = Uri(queryParameters: queryParams).query;
-    String url = "$SERVER_IP/songs/spotify/" + "?" + queryString;
+    String url = "${SONGMAP_API_HOST}songs/spotify/" + "?" + queryString;
     var uri = Uri.parse(url);
 
     String jsonResponse;
     try {
-      jsonResponse = await http.read(uri, headers: _authHeaders(session.jwt));
+      jsonResponse = await http.read(uri, headers: _authHeaders(jwt));
     } catch (e) {
       print("[SongMapApi] error occured.");
       print(e);
@@ -126,14 +112,10 @@ class SongMapApi {
   }
 
   static Future<List<Song>> getSongsBySpotifyIDs(
-      List<String> spotifyIDs, UserSession session) async {
-    if (!session.isValid) {
-      return null;
-    }
-
+      List<String> spotifyIDs, String jwt) async {
     List<Future<Song>> songsFutures = [];
     for (String spotifyID in spotifyIDs) {
-      Future<Song> songFuture = getSongBySpotifyID(spotifyID, session);
+      Future<Song> songFuture = getSongBySpotifyID(spotifyID, jwt);
       songsFutures.add(songFuture);
     }
 
@@ -150,11 +132,7 @@ class SongMapApi {
   }
 
   static Future<List<Song>> createSongs(
-      List<Song> songs, UserSession session) async {
-    if (!session.isValid) {
-      return null;
-    }
-
+      List<Song> songs, String jwt) async {
     if (songs.length > 0) {
       List<dynamic> songsJson = [];
       for (Song song in songs) {
@@ -162,9 +140,9 @@ class SongMapApi {
       }
 
       var body = json.encode(songsJson);
-      var uri = Uri.parse('$SERVER_IP/songs/');
+      var uri = Uri.parse('${SONGMAP_API_HOST}songs/');
       var res =
-          await http.post(uri, body: body, headers: _authHeaders(session.jwt));
+          await http.post(uri, body: body, headers: _authHeaders(jwt));
       print(res.body);
       if (res.statusCode == 200) {
         List<Song> createdSongs = [];

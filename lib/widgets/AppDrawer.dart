@@ -1,10 +1,8 @@
+import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:flutter/material.dart';
-import 'package:songmap_app/screens/login_screen.dart';
-import 'package:songmap_app/utils/auth.dart';
 import 'package:songmap_app/utils/spotify_auth.dart';
 
 class AppDrawer extends StatelessWidget {
-  final Auth _auth = Auth();
   final SpotifyAuth _spotifyAuth = SpotifyAuth();
 
   @override
@@ -29,15 +27,18 @@ class AppDrawer extends StatelessWidget {
               ));
             },
           ),
-          ListTile(
-            title: Text('Sign Out'),
-            onTap: () async {
-              await _auth.signOut();
-              await _spotifyAuth.signOut();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()));
-            },
-          ),
+          SignOutButton(),
+          // ListTile(
+          //   title: Text('Sign Out'),
+          //   onTap: () async {
+          //     // Amplify.Auth.signOut();
+          //     //TODO: figure out how to sign out and go to amplify login page
+          //     await _auth.signOut();
+          //     await _spotifyAuth.signOut();
+          //     Navigator.push(context,
+          //         MaterialPageRoute(builder: (context) => LoginScreen()));
+          //   },
+          // ),
         ],
       ),
     );

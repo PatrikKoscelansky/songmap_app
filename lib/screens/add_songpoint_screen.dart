@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:songmap_app/models/song_model.dart';
 import 'package:songmap_app/models/songpoint_model.dart';
-import 'package:songmap_app/utils/auth.dart';
+import 'package:songmap_app/utils/auth_session_holder.dart';
 import 'package:songmap_app/utils/location_helper.dart';
 import 'package:songmap_app/utils/selected_songs_provider.dart';
 import 'package:songmap_app/utils/songmap_api_service.dart';
 import 'package:songmap_app/utils/spotify_search_tracks_provider.dart';
 import 'package:songmap_app/widgets/AppDrawer.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 
 class AddSongPointScreen extends StatefulWidget {
   @override
@@ -33,12 +33,12 @@ class AddSongPointScreenBody extends StatefulWidget {
 }
 
 class _AddSongPointScreenBodyState extends State<AddSongPointScreenBody> {
-  Auth _auth;
+  String _jwt;
   LocationHelper _locationHelper;
 
   @override
   void initState() {
-    _auth = Auth();
+    _jwt = AuthSessionHolder().jwt;
     _locationHelper = LocationHelper();
     super.initState();
   }
@@ -84,15 +84,17 @@ class _AddSongPointScreenBodyState extends State<AddSongPointScreenBody> {
     );
   }
 
+  //TODO: handle ERRORS properly, e.g. 404
+
   Future<List<SongPoint>> createSongPointsFlow(List<Song> selectedSongs) async {
     List<String> selectedSongsSpotifyIDs =
         selectedSongs.map((e) => e.spotifyId).toList();
     List<Song> foundSongs = [];
     foundSongs = await SongMapApi.getSongsBySpotifyIDs(
-        selectedSongsSpotifyIDs, _auth.userSession);
+        selectedSongsSpotifyIDs, _jwt);
     List<Song> toCreate = whichSongsToCreate(selectedSongs, foundSongs);
     List<Song> createdSongs = [];
-    createdSongs = await SongMapApi.createSongs(toCreate, _auth.userSession);
+    createdSongs = await SongMapApi.createSongs(toCreate, _jwt);
     List<Song> songsForNewSongPoints = new List.from(foundSongs)
       ..addAll(createdSongs);
     List<SongPoint> createdSongPoints =
@@ -121,7 +123,7 @@ class _AddSongPointScreenBodyState extends State<AddSongPointScreenBody> {
           song: song));
     }
 
-    return await SongMapApi.createSongPoints(songPoints, _auth.userSession);
+    return await SongMapApi.createSongPoints(songPoints, _jwt);
   }
 
   List<Song> whichSongsToCreate(List<Song> selected, List<Song> found) {

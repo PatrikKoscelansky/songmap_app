@@ -2,6 +2,8 @@ import 'package:location/location.dart';
 
 //TODO: change this into background task
 class LocationHelper {
+  LocationData _lastKnownLocation;
+
   Location _location;
   bool _serviceEnabled;
   PermissionStatus _permissionGranted;
@@ -24,7 +26,15 @@ class LocationHelper {
       //or throw
       return null;
     }
-    return await _location.getLocation();
+    this._lastKnownLocation = await _location.getLocation();
+    return this._lastKnownLocation;
+  }
+
+  Future<LocationData> lastKnownLocation() async {
+    if (this._lastKnownLocation != null) {
+      return this._lastKnownLocation;
+    }
+    return await getLocation();
   }
 
   Future<bool> _check() async {
