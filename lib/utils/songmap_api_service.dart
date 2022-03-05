@@ -7,13 +7,14 @@ import 'package:songmap_app/models/user_model.dart';
 import 'secrets.dart' show SONGMAP_API_HOST;
 
 class SongMapApi {
-  static Future<User> getUser(String jwt) async {
-    var uri = Uri.parse('${SONGMAP_API_HOST}users/me/');
-    String jsonResponse =
-        await http.read(uri, headers: _authHeaders(jwt));
 
-    return User.fromJson(json.decode(jsonResponse));
-  }
+  // static Future<User> getUser(String jwt) async {
+  //   var uri = Uri.parse('${SONGMAP_API_HOST}users/me/');
+  //   String jsonResponse =
+  //       await http.read(uri, headers: _authHeaders(jwt));
+  //
+  //   return User.fromJson(json.decode(jsonResponse));
+  // }
 
   static Future<List<SongPoint>> getNearSongPoints(
       double longitude, double latitude, String jwt) async {

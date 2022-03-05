@@ -124,29 +124,32 @@ class SpotifyAuth {
     String tokensFromStorage = await _spotifyTokensFromStorage();
     // print("[SpotifyAuth][loadStoredSpotifySession][tokensFromStorage]" +
     //     tokensFromStorage);
-    logging.log("[spotify_auth] loading stored session: " + tokensFromStorage);
+
     tokensFromStorage == null ? logging.log("[spotify_auth] tokens null") : logging.log("[spotify_auth] tokens not null");
     if (tokensFromStorage != null) {
+      logging.log("[spotify_auth] lodaded stored session: " + tokensFromStorage);
       dynamic tokensStorageDecoded = json.decode(tokensFromStorage);
       this._spotifySession = SpotifySession(
           accessToken: tokensStorageDecoded['access_token'],
           refreshToken: tokensStorageDecoded['refresh_token'],
           expires: DateTime.parse(tokensStorageDecoded['expires']));
       if (!this._spotifySession.isValid) {
+        logging.log("[spotify_auth] tokens not valid");
         this._spotifySession = await refreshTokens();
       }
       return this._spotifySession;
     }
+    logging.log("[spotify_auth] loadStoredSpotifySession() returning null");
     return null;
   }
 
   Future<SpotifySession> refreshTokens() async {
-    //  WHY
-    // if (this._spotifySession == null) {
-    //   await loadStoredSpotifySession();
-    // }
+    //  if called, but spotifysession not yet initialized
+    if (this._spotifySession == null) {
+      await loadStoredSpotifySession();
+    }
 
-    logging.log("[spotify_auth] refreshing session...");
+    logging.log("[spotify_auth] refreshing session with: " + this._spotifySession.refreshToken);
 
     Map<String, String> headers = {
       'Accept': 'application/json',
@@ -161,13 +164,15 @@ class SpotifyAuth {
     var uri = Uri.parse(TOKEN_URL);
     var res = await http.post(uri, headers: headers, body: data);
 
+    logging.log("[spotify_auth] refresh status code: " + res.statusCode.toString());
+    logging.log("[spotify_auth] refresh response body: " + res.body);
     if (res.statusCode == 200) {
       logging.log("[spotify_auth] obtained tokens: " + res.body);
       dynamic response = json.decode(res.body);
       this._spotifySession = SpotifySession(
           accessToken: response['access_token'],
           refreshToken: response['refresh_token'],
-          expires: DateTime.parse(response['expires']));
+          expires: SpotifySession.expiresInToDateTime(response['expires_in']));
       await _storage.write(
           key: "spotify_tokens", value: this._spotifySession.toJson());
       logging.log("[spotify_auth] tokens saved");
@@ -175,7 +180,7 @@ class SpotifyAuth {
       logging.log("[spotify_auth] tokens refreshed");
       return this._spotifySession;
     }
-    logging.log("[spotify_auth] tokens refreshed");
+    logging.log("[spotify_auth] tokens not refreshed");
     return null;
   }
 
@@ -213,8 +218,7 @@ class SpotifySession {
   String accessToken;
   String refreshToken;
   DateTime expires;
-  // bool get isValid => expires.isAfter(DateTime.now());
-  bool get isValid => DateTime.now().isBefore(expires);
+  bool get isValid => DateTime.now().toUtc().isBefore(expires);
 
   SpotifySession({this.accessToken, this.refreshToken, this.expires});
 
@@ -228,6 +232,6 @@ class SpotifySession {
 
   static DateTime expiresInToDateTime(int expiresIn) {
     return DateTime.fromMillisecondsSinceEpoch(
-        DateTime.now().millisecondsSinceEpoch + expiresIn * 1000);
+        DateTime.now().toUtc().millisecondsSinceEpoch + expiresIn * 1000);
   }
 }

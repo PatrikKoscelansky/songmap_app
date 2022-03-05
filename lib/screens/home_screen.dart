@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<List<SongPoint>> _nearSongPointsFuture;
 
   //TODO:
-  // - google maps something's wrong
+  // - endpoints for creating songs and songpoints
   // - delete uncecessary pages and stuff
   // - handle SongPoint and Spotify errors in a nice way. Mainly SongPointApi errors
   // - in the card for SongPoint on this Screen, rather calculate distance
@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _nearSongPointsFuture = Future.wait([_fetchSession(), _locHelper.getLocation()]).then((values) async {
       _authSession = values[0];
       String accessToken = (values[0] as CognitoAuthSession).userPoolTokens.accessToken;
+      log("[home_screen] after _fetchSession() token: " + accessToken);
       LocationData location = values[1];
       return await SongMapApi.getNearSongPoints(
           location.longitude, location.latitude, accessToken);
@@ -88,16 +89,16 @@ class _HomeScreenState extends State<HomeScreen> {
           Future.wait([_spotifySessionFuture, _nearSongPointsFuture]),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                print("[HomeScreen] SOME ERROR OCCURED");
-                print(snapshot.error.toString());
-                print("[HomeScreen][nearSongPointsFuture] " +
-                    snapshot.data[1].toString());
-                print("[HomeScreen][spotifySessionFuture] " +
-                    snapshot.data[0].toString());
-                print("[HomeScreen][nearSongPointsFuture] " +
-                    snapshot.data[1].toString());
-              }
+              // if (snapshot.hasError) {
+              //   print("[HomeScreen] SOME ERROR OCCURED");
+              //   print(snapshot.error.toString());
+              //   print("[HomeScreen][spotifySessionFuture] " +
+              //       snapshot.data[0].toString());
+              //   print("[HomeScreen][nearSongPointsFuture] " +
+              //       snapshot.data[1].toString());
+              //   print("[HomeScreen][nearSongPointsFuture] " +
+              //       snapshot.data[1].toString());
+              // }
               List<SongPoint> songPoints = snapshot.data[1];
 
               return _spotifyAuth.getSpotifySession != null
